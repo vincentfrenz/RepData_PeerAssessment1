@@ -52,8 +52,20 @@ plot(AverageStepsAllDays$interval, AverageStepsAllDays$steps, xlab = "Intervals 
 
 ## Imputing missing values
 
+The number of NAs is:
 ```{r}
+# calculate NAs
+sum(is.na(activityData$steps))
+```
 
+Strategy to replace NAs with median value for that interval:
+
+```{r}
+#create copy of original data to modify
+activityDataComplete <- activityData
+
+# replace NAs with median steps for same day
+activityDataComplete$steps[is.na(activityDataComplete$steps)] <- activityDataComplete$steps[MedianStepsPerDay$date == activityDataComplete$date]
 ```
 
 
