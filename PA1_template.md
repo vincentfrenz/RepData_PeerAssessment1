@@ -177,7 +177,32 @@ plot(AverageStepsAllDays$interval, AverageStepsAllDays$steps, xlab = "Intervals 
 
 ## Imputing missing values
 
+The number of NAs is:
 
+```r
+# calculate NAs
+sum(is.na(activityData$steps))
+```
+
+```
+## [1] 2304
+```
+
+Strategy to replace NAs with median value for that interval:
+
+
+```r
+#create copy of original data to modify
+activityDataComplete <- activityData
+
+# replace NAs with median steps for same day
+activityDataComplete$steps[is.na(activityDataComplete$steps)] <- activityDataComplete$steps[MedianStepsPerDay$date == activityDataComplete$date]
+```
+
+```
+## Warning in `==.default`(MedianStepsPerDay$date, activityDataComplete$date):
+## longer object length is not a multiple of shorter object length
+```
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
