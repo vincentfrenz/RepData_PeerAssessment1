@@ -495,6 +495,18 @@ plot(AverageStepsAllDays$interval, AverageStepsAllDays$steps, xlab = &quot;Inter
 </div>
 <div id="imputing-missing-values" class="section level2">
 <h2>Imputing missing values</h2>
+<p>The number of NAs is:</p>
+<pre class="r"><code># calculate NAs
+sum(is.na(activityData$steps))</code></pre>
+<pre><code>## [1] 2304</code></pre>
+<p>Strategy to replace NAs with median value for that interval:</p>
+<pre class="r"><code>#create copy of original data to modify
+activityDataComplete &lt;- activityData
+
+# replace NAs with median steps for same day
+activityDataComplete$steps[is.na(activityDataComplete$steps)] &lt;- activityDataComplete$steps[MedianStepsPerDay$date == activityDataComplete$date]</code></pre>
+<pre><code>## Warning in `==.default`(MedianStepsPerDay$date, activityDataComplete$date):
+## longer object length is not a multiple of shorter object length</code></pre>
 </div>
 <div id="are-there-differences-in-activity-patterns-between-weekdays-and-weekends" class="section level2">
 <h2>Are there differences in activity patterns between weekdays and weekends?</h2>
