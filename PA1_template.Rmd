@@ -42,7 +42,11 @@ MedianStepsPerDay
 ## What is the average daily activity pattern?
 
 ```{r}
+# calculate average steps by interval (all days)
+AverageStepsAllDays <- aggregate(steps ~ interval, activityData, mean, na.action = na.omit)
 
+# plot line chart 
+plot(AverageStepsAllDays$interval, AverageStepsAllDays$steps, xlab = "Intervals (5-minutes)", ylab = "Average number of steps", main = "Average number of steps by interval" , type = "l")
 ```
 
 
