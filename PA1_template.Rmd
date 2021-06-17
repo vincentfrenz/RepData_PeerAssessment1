@@ -116,24 +116,16 @@ head(activityDataComplete)
 
 ```{r}
 library(ggplot2)
+library(dplyr)
+library(data.table)
 
 
-AverageStepsAllDaysComplete <- aggregate(steps ~ interval, activityDataComplete, mean, na.action = na.omit)
+activityDataComplete$Mean <- lapply(activityDataComplete$steps, mean)
 
-
-ggplot(activityDataComplete , aes(x = interval , y = steps, color=`weekdayOrweekend`)) + geom_line() + labs(title = "Average daily steps", x = "Interval", y = "Number of steps") + facet_wrap(~`weekdayOrweekend` , ncol = 1, nrow=2)
-
-
-
-AverageStepsAllDaysComplete <- aggregate(steps ~ interval, activityDataComplete, mean, na.action = na.omit)
-
-
-par(mfrow = c(2,1))
-#with()
+activityDataComplete[is.na(steps), "steps"] <- activityDataComplete[, c(lapply(.SD, median, na.rm = TRUE)), .SDcols = c("steps")]
+activityDataCompleteInterval <- activityDataComplete[, c(lapply(.SD, mean, na.rm = TRUE)), .SDcols = c("steps"), by = .(interval, `weekdayOrweekend`)] 
 
 plot(AverageStepsAllDaysComplete$interval, AverageStepsAllDaysComplete$steps, xlab = "Intervals (5-minutes)", ylab = "Average number of steps", main = "Average number of steps by interval" , type = "l", lwd=2, col = "lightblue")
-
-
 
 ```
 
