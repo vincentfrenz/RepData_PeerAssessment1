@@ -103,10 +103,37 @@ There is a significant reduction is the mean and median values. This is expected
 1. Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.
 ```{r}
 
+# assign "weekday" and "weekend" to each row
+activityDataComplete$day <- weekdays(activityData$date)
+activityDataComplete[grepl(pattern = "Monday|Tuesday|Wednesday|Thursday|Friday", activityDataComplete$day), "weekdayOrweekend"] <- "weekday"
+activityDataComplete[grepl(pattern = "Saturday|Sunday", activityDataComplete$day), "weekdayOrweekend"] <- "weekend"
+
+head(activityDataComplete)
+
 ```
 
 2. Make a panel plot containing a time series plot (i.e. \color{red}{\verb|type = "l"|}type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). See the README file in the GitHub repository to see an example of what this plot should look like using simulated data.
+
 ```{r}
+library(ggplot2)
+
+
+AverageStepsAllDaysComplete <- aggregate(steps ~ interval, activityDataComplete, mean, na.action = na.omit)
+
+
+ggplot(activityDataComplete , aes(x = interval , y = steps, color=`weekdayOrweekend`)) + geom_line() + labs(title = "Average daily steps", x = "Interval", y = "Number of steps") + facet_wrap(~`weekdayOrweekend` , ncol = 1, nrow=2)
+
+
+
+AverageStepsAllDaysComplete <- aggregate(steps ~ interval, activityDataComplete, mean, na.action = na.omit)
+
+
+par(mfrow = c(2,1))
+#with()
+
+plot(AverageStepsAllDaysComplete$interval, AverageStepsAllDaysComplete$steps, xlab = "Intervals (5-minutes)", ylab = "Average number of steps", main = "Average number of steps by interval" , type = "l", lwd=2, col = "lightblue")
+
+
 
 ```
 
