@@ -126,15 +126,6 @@ ggplot(activityDataComplete, aes(x = interval, y = steps, color = weekdayOrweeke
        x = "Interval", 
        y = "Average number of steps") + 
   facet_wrap(~weekdayOrweekend, ncol = 1, nrow = 2)
-
-
-activityDataComplete$Mean <- lapply(activityDataComplete$steps, mean)
-
-
-par(mfrow = c(2,1))
-with(activityDataComplete, {
-	plot(interval, MeanStepsPerWeekDay, xlab = "Intervals (5-minutes)", ylab = "Average number of steps", main = "Average number of steps by interval" , type = "l", lwd=2, col = "lightblue")
-	plot(interval, MeanStepsPerWeekendDay, xlab = "Intervals (5-minutes)", ylab = "Average number of steps", main = "Average number of steps by interval" , type = "l", lwd=2, col = "lightblue")})
 ```
 
 
