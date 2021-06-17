@@ -68,20 +68,36 @@ sum(is.na(activityData$steps))
 
 3. Create a new dataset that is equal to the original dataset but with the missing data filled in.
 ```{r}
-#create copy of original data to modify
+# create copy of original data to modify
 activityDataComplete <- activityData
 
-# replace NAs with median steps for same day
-
-aggregate(steps ~ date, activityData, sum, na.action = na.omit)
-
-activityDataComplete$steps[]
-
-
-activityDataComplete$steps[is.na(activityDataComplete$steps)] <- 
+# replace NAs with median steps for all days ("0")
+activityDataComplete[is.na(activityDataComplete$steps),"steps"] <- 0
 ```
 
 4. Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
+
+```{r}
+CompleteTotalStepsPerDay <- aggregate(steps ~ date, activityDataComplete, sum, na.action = na.omit)
+
+
+hist(CompleteTotalStepsPerDay$steps, xlab = "Total number of steps taken per day", main = "Total number of steps taken per day", breaks = 16, col = "lightblue")
+```
+
+
+Mean number of steps per day:
+```{r}
+CompleteMeanStepsPerDay <- mean(CompleteTotalStepsPerDay$steps)
+CompleteMeanStepsPerDay
+```
+Median number of steps per day:
+```{r}
+CompleteMedianStepsPerDay <- median(CompleteTotalStepsPerDay$steps)
+CompleteMedianStepsPerDay
+```
+
+There is a significant reduction is the mean and median values. This is expected as the replacement value, 0, is lower than the original mean and median values. The histogram for the dataset with the replaced values reflects the increase in the number of days where the total number of steps is 0.
+
 
 ## Are there differences in activity patterns between weekdays and weekends?
 1. Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.
