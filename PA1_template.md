@@ -121,7 +121,7 @@ sum(is.na(activityData$steps))
 activityDataComplete <- activityData
 
 # replace NAs with median steps for all days 
-activityDataComplete[is.na(activityDataComplete$steps),"steps"] <- median(activityDataComplete$steps)
+activityDataComplete[is.na(activityDataComplete$steps),"steps"] <- median(activityDataComplete$steps, na.rm = T)
 ```
 
 4. Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
@@ -145,7 +145,7 @@ CompleteMeanStepsPerDay
 ```
 
 ```
-## [1] 10766.19
+## [1] 9354.23
 ```
 Median number of steps per day:
 
@@ -155,7 +155,7 @@ CompleteMedianStepsPerDay
 ```
 
 ```
-## [1] 10765
+## [1] 10395
 ```
 
 There is a significant reduction is the mean and median values. This is expected as the replacement value, 0, is lower than the original mean and median values. The histogram for the dataset with the replaced values reflects the increase in the number of days where the total number of steps is 0.
@@ -166,37 +166,46 @@ There is a significant reduction is the mean and median values. This is expected
 
 ```r
 # assign "weekday" and "weekend" to each row
-activityDataComplete$day <- weekdays(activityData$date)
-activityDataComplete[grepl(pattern = "Monday|Tuesday|Wednesday|Thursday|Friday", activityDataComplete$day), "weekdayOrweekend"] <- "weekday"
-activityDataComplete[grepl(pattern = "Saturday|Sunday", activityDataComplete$day), "weekdayOrweekend"] <- "weekend"
+#activityDataComplete$day <- weekdays(activityData$date)
+#activityDataComplete[grepl(pattern = "Monday|Tuesday|Wednesday|Thursday|Friday", activityDataComplete$day), "weekdayOrweekend"] <- "weekday"
+#activityDataComplete[grepl(pattern = "Saturday|Sunday", activityDataComplete$day), "weekdayOrweekend"] <- "weekend"
 
+# improvement
+activityDataComplete$day <- ifelse(weekdays(activityDataComplete$date) %in% c("Saturday", "Sunday"), "weekend", "weekday")
+activityDataComplete$day <- factor(activityDataComplete$day)
 head(activityDataComplete)
 ```
 
 ```
-##   steps       date interval    day weekdayOrweekend
-## 1    NA 2012-10-01        0 Monday          weekday
-## 2    NA 2012-10-01        5 Monday          weekday
-## 3    NA 2012-10-01       10 Monday          weekday
-## 4    NA 2012-10-01       15 Monday          weekday
-## 5    NA 2012-10-01       20 Monday          weekday
-## 6    NA 2012-10-01       25 Monday          weekday
+##   steps       date interval     day
+## 1     0 2012-10-01        0 weekday
+## 2     0 2012-10-01        5 weekday
+## 3     0 2012-10-01       10 weekday
+## 4     0 2012-10-01       15 weekday
+## 5     0 2012-10-01       20 weekday
+## 6     0 2012-10-01       25 weekday
 ```
 
 2. Make a panel plot containing a time series plot (i.e. \color{red}{\verb|type = "l"|}type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). See the README file in the GitHub repository to see an example of what this plot should look like using simulated data.
 
 
 ```r
-ggplot(activityDataComplete, aes(x = interval, y = steps, color = weekdayOrweekend)) + 
+# note group_by two variables
+
+plotdata <- activityDataComplete%>%group_by(day, interval)%>%summarise("steps"=mean(steps))
+```
+
+```
+## `summarise()` has grouped output by 'day'. You can override using the `.groups` argument.
+```
+
+```r
+ggplot(plotdata, aes(x = interval, y = steps, color = day)) + 
   geom_line() + 
   labs(title = "Average daily steps", 
        x = "Interval", 
        y = "Average number of steps") + 
-  facet_wrap(~weekdayOrweekend, ncol = 1, nrow = 2)
-```
-
-```
-## Warning: Removed 2 row(s) containing missing values (geom_path).
+  facet_wrap(~day, ncol = 1, nrow = 2)
 ```
 
 ![](PA1_template_files/figure-html/unnamed-chunk-14-1.png)<!-- -->

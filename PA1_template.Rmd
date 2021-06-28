@@ -76,7 +76,7 @@ sum(is.na(activityData$steps))
 activityDataComplete <- activityData
 
 # replace NAs with median steps for all days 
-activityDataComplete[is.na(activityDataComplete$steps),"steps"] <- median(activityDataComplete$steps)
+activityDataComplete[is.na(activityDataComplete$steps),"steps"] <- median(activityDataComplete$steps, na.rm = T)
 ```
 
 4. Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
@@ -108,11 +108,15 @@ There is a significant reduction is the mean and median values. This is expected
 ```{r}
 
 # assign "weekday" and "weekend" to each row
-activityDataComplete$day <- weekdays(activityData$date)
-activityDataComplete[grepl(pattern = "Monday|Tuesday|Wednesday|Thursday|Friday", activityDataComplete$day), "weekdayOrweekend"] <- "weekday"
-activityDataComplete[grepl(pattern = "Saturday|Sunday", activityDataComplete$day), "weekdayOrweekend"] <- "weekend"
+#activityDataComplete$day <- weekdays(activityData$date)
+#activityDataComplete[grepl(pattern = "Monday|Tuesday|Wednesday|Thursday|Friday", activityDataComplete$day), "weekdayOrweekend"] <- "weekday"
+#activityDataComplete[grepl(pattern = "Saturday|Sunday", activityDataComplete$day), "weekdayOrweekend"] <- "weekend"
 
+# improvement
+activityDataComplete$day <- ifelse(weekdays(activityDataComplete$date) %in% c("Saturday", "Sunday"), "weekend", "weekday")
+activityDataComplete$day <- factor(activityDataComplete$day)
 head(activityDataComplete)
+
 
 ```
 
@@ -120,12 +124,16 @@ head(activityDataComplete)
 
 ```{r}
 
-ggplot(activityDataComplete, aes(x = interval, y = steps, color = weekdayOrweekend)) + 
+# note group_by two variables
+
+plotdata <- activityDataComplete%>%group_by(day, interval)%>%summarise("steps"=mean(steps))
+
+ggplot(plotdata, aes(x = interval, y = steps, color = day)) + 
   geom_line() + 
   labs(title = "Average daily steps", 
        x = "Interval", 
        y = "Average number of steps") + 
-  facet_wrap(~weekdayOrweekend, ncol = 1, nrow = 2)
+  facet_wrap(~day, ncol = 1, nrow = 2)
 ```
 
 
